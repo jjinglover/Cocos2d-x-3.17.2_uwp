@@ -38,7 +38,7 @@
 #define LWS_BUILD_HASH "desktop-s54jiqa\\serveryjx@DESKTOP-S54JIQA-v2.0.0-640-g8964ce9d"
 
 /* Build with OpenSSL support */
-#define LWS_OPENSSL_SUPPORT
+//#define LWS_OPENSSL_SUPPORT
 
 /* The client should load and trust CA root certs it finds in the OS */
 #define LWS_SSL_CLIENT_USE_OS_CA_CERTS
@@ -53,7 +53,7 @@
 /* #undef LWS_WITH_LIBEV */
 
 /* Enable libuv io loop */
-#define LWS_WITH_LIBUV
+//#define LWS_WITH_LIBUV
 
 /* Enable libevent io loop */
 /* #undef LWS_WITH_LIBEVENT */
