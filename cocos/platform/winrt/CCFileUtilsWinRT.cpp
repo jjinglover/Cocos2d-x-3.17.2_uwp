@@ -129,7 +129,7 @@ std::string CCFileUtilsWinRT::getSuitableFOpen(const std::string& filenameUtf8) 
     return UTF8StringToMultiByte(filenameUtf8);
 }
 
-long CCFileUtilsWinRT::getFileSize(const std::string &filepath)
+long CCFileUtilsWinRT::getFileSize(const std::string &filepath) const
 {
     WIN32_FILE_ATTRIBUTE_DATA fad;
     if (!GetFileAttributesEx(StringUtf8ToWideChar(filepath).c_str(), GetFileExInfoStandard, &fad))
@@ -142,7 +142,7 @@ long CCFileUtilsWinRT::getFileSize(const std::string &filepath)
     return (long)size.QuadPart;
 }
 
-FileUtils::Status CCFileUtilsWinRT::getContents(const std::string& filename, ResizableBuffer* buffer)
+FileUtils::Status CCFileUtilsWinRT::getContents(const std::string& filename, ResizableBuffer* buffer) const
 {
     if (filename.empty())
         return FileUtils::Status::NotExists;

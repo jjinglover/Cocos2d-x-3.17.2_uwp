@@ -53,8 +53,8 @@ public:
     virtual std::string getFullPathForFilenameWithinDirectory(const std::string& strDirectory, const std::string& strFilename) const override;
 	virtual std::string getStringFromFile(const std::string& filename) const override;
     virtual std::string getSuitableFOpen(const std::string& filenameUtf8) const override;
-    virtual long getFileSize(const std::string &filepath) override;
-	virtual FileUtils::Status getContents(const std::string& filename, ResizableBuffer* buffer) override;
+    virtual long getFileSize(const std::string &filepath) const override;
+	virtual FileUtils::Status getContents(const std::string& filename, ResizableBuffer* buffer) const override;
 	static std::string getAppPath();
 
 	virtual bool writeDataToFile(const Data &retData, const std::string& fullPath) const override;
