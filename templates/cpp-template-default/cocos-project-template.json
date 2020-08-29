@@ -11,7 +11,11 @@
                "proj.win32/PROJECT_NAME.vcxproj.filters",
                "proj.win32/PROJECT_NAME.vcxproj.user",
                "proj.win32/PROJECT_NAME.sln",
-               "proj.ios_mac/PROJECT_NAME.xcodeproj"
+               "proj.ios_mac/PROJECT_NAME.xcodeproj",
+               "proj.win10/PROJECT_NAME.sln",
+               "proj.win10/App/PROJECT_NAME.vcxproj",
+               "proj.win10/App/PROJECT_NAME.vcxproj.filters",
+               "proj.win10/App/PROJECT_NAME_TemporaryKey.pfx"
             ]
          },
          "project_replace_project_name":{
@@ -28,6 +32,10 @@
                "proj.ios_mac/ios/main.m",
                "proj.ios_mac/ios/Prefix.pch",
                "proj.ios_mac/PROJECT_NAME.xcodeproj/project.pbxproj",
+               "proj.win10/PROJECT_NAME.sln",
+               "proj.win10/App/PROJECT_NAME.vcxproj",
+               "proj.win10/App/PROJECT_NAME.vcxproj.filters",
+               "proj.win10/App/Package.appxmanifest",
                "CMakeLists.txt"
             ]
          },
@@ -73,6 +81,11 @@
                "file_path": "proj.android/app/AndroidManifest.xml",
                "pattern": "android:screenOrientation=\\\".*\\\"",
                "replace_string": "android:screenOrientation=\"portrait\""
+            },
+            {
+               "file_path": "proj.win10/App/Package.appxmanifest",
+               "pattern": "Rotation Preference=\\\"landscape",
+               "replace_string": "Rotation Preference=\"portrait"
             }
          ]
       }
