@@ -18,6 +18,7 @@
 #define XAUDIO2_HELPER_FUNCTIONS 1
 #include <xaudio2.h>
 #include <map>
+#include <string>
 
 static const int STREAMING_BUFFER_SIZE = 65536;
 static const int MAX_BUFFER_COUNT = 3;
