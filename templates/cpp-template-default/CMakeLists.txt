@@ -32,6 +32,11 @@ project(${APP_NAME})
 set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cocos2d)
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
+if(EMSCRIPTEN)
+    set(CMAKE_C_FLAGS  "-s USE_PTHREADS -s FORCE_FILESYSTEM=1 -s FETCH=1 -s USE_GLFW=3 -s VERBOSE=1 -s USE_LIBJPEG=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s USE_FREETYPE=1")
+    set(CMAKE_CXX_FLAGS  "-s USE_PTHREADS -s FORCE_FILESYSTEM=1 -s FETCH=1 -s USE_GLFW=3 -s VERBOSE=1 -s USE_LIBJPEG=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s USE_FREETYPE=1")
+endif()
+
 include(CocosBuildSet)
 add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 
@@ -106,6 +111,10 @@ elseif(APPLE)
              )
     endif()
     list(APPEND GAME_SOURCE ${common_res_files})
+elseif(EMSCRIPTEN)
+    list(APPEND GAME_SOURCE
+         proj.emscripten/main.cpp
+         )
 endif()
 
 # mark app complie info and libs info
@@ -148,4 +157,21 @@ endif()
 if(LINUX OR WINDOWS)
     set(APP_RES_DIR "$<TARGET_FILE_DIR:${APP_NAME}>/Resources")
     cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR} FOLDERS ${GAME_RES_FOLDER})
+endif()
+
+if(EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    target_link_options(${APP_NAME} PRIVATE
+                        "-sEXPORTED_FUNCTIONS=[_cocos_ccdirector_pause,_cocos_ccdirector_resume,_cocos_ccdirector_step,_main]"
+                        "-sEXPORTED_RUNTIME_METHODS=[ccall,cwrap]"
+                        )
+    set(EMSCRIPTEN_LINK_FLAGS "-lidbfs.js -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s INITIAL_MEMORY=512MB --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/index.html --use-preload-cache")
+    # Disable wasm, generate js build
+    # string(APPEND EMSCRIPTEN_LINK_FLAGS " -s WASM=0")
+
+    foreach(FOLDER IN LISTS GAME_RES_FOLDER)
+        string(APPEND EMSCRIPTEN_LINK_FLAGS " --preload-file ${FOLDER}/@/")
+    endforeach()
+    
+    set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}")
 endif()

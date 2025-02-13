@@ -198,6 +198,7 @@ class Platforms(object):
     LINUX = 'linux'
     METRO = "metro"
     TIZEN = "tizen"
+    EMSCRIPTEN = "emscripten"
 
     CFG_CLASS_MAP = {
         ANDROID : "cocos_project.AndroidConfig",
@@ -207,7 +208,8 @@ class Platforms(object):
         WIN32 : "cocos_project.Win32Config",
         LINUX : "cocos_project.LinuxConfig",
         METRO : "cocos_project.MetroConfig",
-        TIZEN : "cocos_project.TizenConfig"
+        TIZEN : "cocos_project.TizenConfig",
+        EMSCRIPTEN : "cocos_project.EmscriptenConfig"
     }
 
     @staticmethod
@@ -237,10 +239,10 @@ class Platforms(object):
     def _filter_platforms(self, platforms):
         ret = []
         platforms_for_os = {
-            "linux" : [ Platforms.WEB, Platforms.LINUX, Platforms.ANDROID, Platforms.TIZEN ],
-            "mac" : [ Platforms.WEB, Platforms.IOS, Platforms.MAC, Platforms.ANDROID, Platforms.TIZEN ],
+            "linux" : [ Platforms.WEB, Platforms.LINUX, Platforms.ANDROID, Platforms.TIZEN, Platforms.EMSCRIPTEN],
+            "mac" : [ Platforms.WEB, Platforms.IOS, Platforms.MAC, Platforms.ANDROID, Platforms.TIZEN, Platforms.EMSCRIPTEN ],
             "win32" : [ Platforms.WEB, Platforms.WIN32, Platforms.ANDROID,
-                        Platforms.METRO, Platforms.TIZEN ]
+                        Platforms.METRO, Platforms.TIZEN, Platforms.EMSCRIPTEN ]
         }
         for p in platforms:
             if cocos.os_is_linux():
@@ -259,7 +261,7 @@ class Platforms(object):
         # generate the platform list for different projects
         if self._project._is_lua_project():
             if self._project._is_native_support():
-                platform_list = [ Platforms.ANDROID, Platforms.WIN32, Platforms.IOS, Platforms.MAC, Platforms.LINUX, Platforms.TIZEN ]
+                platform_list = [ Platforms.ANDROID, Platforms.WIN32, Platforms.IOS, Platforms.MAC, Platforms.EMSCRIPTEN, Platforms.LINUX, Platforms.TIZEN ]
             else:
                 if self._project.has_android_libs():
                     platform_list = [ Platforms.ANDROID ]
@@ -267,14 +269,14 @@ class Platforms(object):
                     platform_list = []
         elif self._project._is_js_project():
             if self._project._is_native_support():
-                platform_list = [ Platforms.ANDROID, Platforms.WIN32, Platforms.IOS, Platforms.MAC, Platforms.WEB, Platforms.LINUX, Platforms.METRO, Platforms.TIZEN ]
+                platform_list = [ Platforms.ANDROID, Platforms.WIN32, Platforms.IOS, Platforms.MAC, Platforms.EMSCRIPTEN, Platforms.WEB, Platforms.LINUX, Platforms.METRO, Platforms.TIZEN ]
             else:
                 if self._project.has_android_libs():
                     platform_list = [ Platforms.ANDROID, Platforms.WEB ]
                 else:
                     platform_list = [ Platforms.WEB ]
         elif self._project._is_cpp_project():
-            platform_list = [ Platforms.ANDROID, Platforms.WIN32, Platforms.IOS, Platforms.MAC, Platforms.LINUX, Platforms.METRO, Platforms.TIZEN ]
+            platform_list = [ Platforms.ANDROID, Platforms.WIN32, Platforms.IOS, Platforms.MAC, Platforms.EMSCRIPTEN, Platforms.LINUX, Platforms.METRO, Platforms.TIZEN ]
 
         # filter the available platform list
         platform_list = self._filter_platforms(platform_list)
@@ -336,6 +338,9 @@ class Platforms(object):
 
     def is_tizen_active(self):
         return self._current == Platforms.TIZEN
+
+    def is_emscripten_active(self):
+        return self._current == Platforms.EMSCRIPTEN
 
     def get_current_config(self):
         if self.none_active():
@@ -625,5 +630,49 @@ class TizenConfig(PlatformConfig):
 
     def _is_available(self):
         ret = super(TizenConfig, self)._is_available()
+
+        return ret
+
+class EmscriptenConfig(PlatformConfig):
+    KEY_CMAKE_PATH = "cmake_path"
+    KEY_BUILD_DIR = "build_dir"
+    KEY_PROJECT_NAME = "project_name"
+    KEY_BUILD_RESULT_DIR = "build_result_dir"
+
+    def _use_default(self):
+        if self._is_script:
+            self.proj_path = os.path.join(self._proj_root_path, "frameworks", "runtime-src", "proj.emscripten")
+        else:
+            self.proj_path = os.path.join(self._proj_root_path, "proj.emscripten")
+
+        self.cmake_path = None
+        self.build_dir = None
+        self.project_name = None
+        self.build_result_dir = None
+
+    def _parse_info(self, cfg_info):
+        super(EmscriptenConfig, self)._parse_info(cfg_info)
+        if EmscriptenConfig.KEY_CMAKE_PATH in cfg_info:
+            self.cmake_path = cfg_info[EmscriptenConfig.KEY_CMAKE_PATH]
+        else:
+            self.cmake_path = None
+
+        if EmscriptenConfig.KEY_BUILD_DIR in cfg_info:
+            self.build_dir = cfg_info[EmscriptenConfig.KEY_BUILD_DIR]
+        else:
+            self.build_dir = None
+
+        if EmscriptenConfig.KEY_PROJECT_NAME in cfg_info:
+            self.project_name = cfg_info[EmscriptenConfig.KEY_PROJECT_NAME]
+        else:
+            self.project_name = None
+
+        if EmscriptenConfig.KEY_BUILD_RESULT_DIR in cfg_info:
+            self.build_result_dir = cfg_info[EmscriptenConfig.KEY_BUILD_RESULT_DIR]
+        else:
+            self.build_result_dir = None
+        
+    def _is_available(self):
+        ret = super(EmscriptenConfig, self)._is_available()
 
         return ret

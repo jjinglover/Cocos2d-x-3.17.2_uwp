@@ -28,6 +28,7 @@ THE SOFTWARE.
 This script will install environment variables needed to by cocos2d-x. It will set these envrironment variables:
 * COCOS_CONSOLE_ROOT: used to run cocos console tools, more information about cocos console tools please refer to
 https://github.com/cocos2d/cocos2d-console
+* EMSDK_ROOT: used to build C or C++ codes to JavaScript
 * NDK_ROOT: used to build android native codes
 * ANDROID_SDK_ROOT: used to generate applicatoin on Android through commands
 * COCOS_X_ROOT: path where cocos2d-x is installed
@@ -60,6 +61,7 @@ COCOS_X_ROOT = 'COCOS_X_ROOT'
 COCOS_TEMPLATES_ROOT = 'COCOS_TEMPLATES_ROOT'
 NDK_ROOT = 'NDK_ROOT'
 ANDROID_SDK_ROOT = 'ANDROID_SDK_ROOT'
+EMSDK_ROOT = 'EMSDK_ROOT'
 
 
 def _check_python_version():
@@ -339,6 +341,8 @@ class SetEnvVar(object):
             ret = self._is_ndk_root_valid(value)
         elif var_name == ANDROID_SDK_ROOT:
             ret = self._is_android_sdk_root_valid(value)
+        elif var_name == EMSDK_ROOT:
+            ret = self._is_emsdk_root_valid(value)
         else:
             ret = False
 
@@ -372,6 +376,20 @@ class SetEnvVar(object):
         else:
             android_path = os.path.join(android_sdk_root, 'tools', 'android')
         if os.path.isfile(android_path):
+            return True
+        else:
+            return False
+
+    def _is_emsdk_root_valid(self, emsdk_root):
+        if not emsdk_root:
+            return False
+
+        if self._isWindows():
+            emsdk_path = os.path.join(emsdk_root, 'emsdk.bat')
+        else:
+            emsdk_path = os.path.join(emsdk_root, 'emsdk')
+
+        if os.path.isfile(emsdk_path):
             return True
         else:
             return False
@@ -579,6 +597,9 @@ class SetEnvVar(object):
 
     def _get_ndkbuild_path(self):
         return self._get_sdkpath_for_cmd("ndk-build", False)
+    
+    def _get_emsdk_path(self):
+        return self._get_sdkpath_for_cmd("emsdk", False)
 
     def _get_sdkpath_for_cmd(self, cmd, has_bin_folder=True):
         ret = None
@@ -604,6 +625,8 @@ class SetEnvVar(object):
             return self._get_ndkbuild_path()
         elif var_name == ANDROID_SDK_ROOT:
             return self._get_androidsdk_path()
+        elif var_name == EMSDK_ROOT:
+            return self._get_emsdk_path()
         else:
             return None
 
@@ -658,7 +681,7 @@ class SetEnvVar(object):
         else:
             return SetEnvVar.RESULT_DO_NOTHING
 
-    def set_environment_variables(self, ndk_root, android_sdk_root, quiet):
+    def set_environment_variables(self, ndk_root, android_sdk_root, emsdk_root, quiet):
 
         print('\nSetting up cocos2d-x...')
 
@@ -677,6 +700,7 @@ class SetEnvVar(object):
         if(quiet) :
             ndk_ret = self.set_variable(NDK_ROOT, ndk_root)
             sdk_ret = self.set_variable(ANDROID_SDK_ROOT, android_sdk_root)
+            emsdk_ret = self.set_variable(EMSDK_ROOT, emsdk_root)
 
         # tip the backup file
         if (self.backup_file is not None) and (os.path.exists(self.backup_file)):
@@ -699,6 +723,8 @@ if __name__ == '__main__':
         '-n', '--ndkroot', dest='ndk_root', help='directory of ndk root')
     parser.add_option('-a', '--androidsdkroot',
                       dest='android_sdk_root', help='directory of android sdk root')
+    parser.add_option('-e', '--emsdkroot',
+                      dest='emsdk_root', help='directory of emsdk root')
     parser.add_option(
         '-q', '--quiet', dest='quiet',action="store_false", default = True, help='setup without setting NDK,SDK')
     opts, args = parser.parse_args()
@@ -706,7 +732,7 @@ if __name__ == '__main__':
     # set environment variables
     env = SetEnvVar()
     env.set_environment_variables(
-        opts.ndk_root, opts.android_sdk_root, opts.quiet)
+        opts.ndk_root, opts.android_sdk_root, opts.emsdk_root, opts.quiet)
 
     if env._isWindows():
         import ctypes
