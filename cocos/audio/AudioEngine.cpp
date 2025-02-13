@@ -43,6 +43,8 @@
 #include "audio/linux/AudioEngine-linux.h"
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_TIZEN
 #include "audio/tizen/AudioEngine-tizen.h"
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
+#include "audio/emscripten/AudioEngine-emscripten.h"
 #endif
 
 #define TIME_DELAY_PRECISION 0.0001
@@ -177,7 +179,7 @@ bool AudioEngine::lazyInit()
         }
     }
 
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID)
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID && CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN)
     if (_audioEngineImpl && s_threadPool == nullptr)
     {
         s_threadPool = new (std::nothrow) AudioEngineThreadPool();

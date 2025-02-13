@@ -30,7 +30,11 @@ THE SOFTWARE.
 #include "base/CCRef.h"
 #include "platform/CCCommon.h"
 #include "platform/CCGLView.h"
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+#include <GLFW/glfw3.h>
+#else
 #include "glfw3.h"
+#endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #ifndef GLFW_EXPOSE_NATIVE_WIN32

@@ -108,7 +108,16 @@ elseif(ANDROID)
         audio/android/mp3reader.cpp
         audio/android/tinysndfile.cpp
         )
+elseif(EMSCRIPTEN)
+    set(COCOS_AUDIO_PLATFORM_HEADER
+        audio/emscripten/AudioEngine-emscripten.h
+        )
 
+    set(COCOS_AUDIO_PLATFORM_SRC
+        audio/emscripten/SimpleAudioEngine.cpp
+        audio/emscripten/AudioEngine-emscripten.h
+        audio/emscripten/AudioEngine-emscripten.cpp
+        )
 elseif(LINUX)
     set(COCOS_AUDIO_PLATFORM_HEADER
         audio/linux/AudioEngine-linux.h

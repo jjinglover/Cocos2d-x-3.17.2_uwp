@@ -25,20 +25,14 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __CCHTTPCLIENT_H__
-#define __CCHTTPCLIENT_H__
+#pragma once
 
-#ifdef EMSCRIPTEN
-#include "HttpClient-emscripten.h"
-#else
-
-#include <thread>
-#include <condition_variable>
 #include "base/CCVector.h"
-#include "base/CCScheduler.h"
 #include "network/HttpRequest.h"
 #include "network/HttpResponse.h"
 #include "network/HttpCookie.h"
+
+struct emscripten_fetch_t;
 
 /**
  * @addtogroup network
@@ -151,10 +145,6 @@ public:
 
     HttpCookie* getCookie() const {return _cookie; }
 
-    std::mutex& getCookieFileMutex() {return _cookieFileMutex;}
-
-    std::mutex& getSSLCaFileMutex() {return _sslCaFileMutex;}
-    
     typedef std::function<bool(HttpRequest*)> ClearRequestPredicate;
     typedef std::function<bool(HttpResponse*)> ClearResponsePredicate;
 
@@ -185,57 +175,27 @@ public:
 private:
     HttpClient();
     virtual ~HttpClient();
-    bool init();
-
-    /**
-     * Init pthread mutex, semaphore, and create new thread for http requests
-     * @return bool
-     */
-    bool lazyInitThreadSemaphore();
-    void networkThread();
-    void networkThreadAlone(HttpRequest* request, HttpResponse* response);
-    /** Poll function called from main thread to dispatch callbacks when http requests finished **/
-    void dispatchResponseCallbacks();
-
-    void processResponse(HttpResponse* response, char* responseMessage);
+    
+    void processResponse(HttpResponse* response, bool isAlone);
+    static void onRequestComplete(emscripten_fetch_t *fetch);
     void increaseThreadCount();
     void decreaseThreadCountAndMayDeleteThis();
 
 private:
-    bool _isInited;
-
     int _timeoutForConnect;
-    std::mutex _timeoutForConnectMutex;
-
+    
     int _timeoutForRead;
-    std::mutex _timeoutForReadMutex;
-
-    int  _threadCount;
-    std::mutex _threadCountMutex;
-
-    Scheduler* _scheduler;
-    std::mutex _schedulerMutex;
-
+    
+    int _threadCount;
+    
     Vector<HttpRequest*>  _requestQueue;
-    std::mutex _requestQueueMutex;
-
-    Vector<HttpResponse*> _responseQueue;
-    std::mutex _responseQueueMutex;
-
+    
     std::string _cookieFilename;
-    std::mutex _cookieFileMutex;
-
+    
     std::string _sslCaFilename;
-    std::mutex _sslCaFileMutex;
-
+    
     HttpCookie* _cookie;
 
-    std::condition_variable_any _sleepCondition;
-
-    char _responseMessage[RESPONSE_BUFFER_SIZE];
-
-    HttpRequest* _requestSentinel;
-    
     ClearRequestPredicate _clearRequestPredicate;
     ClearResponsePredicate _clearResponsePredicate;
 };
@@ -246,7 +206,3 @@ NS_CC_END
 
 // end group
 /// @}
-
-#endif // EMSCRIPTEN
-#endif //__CCHTTPCLIENT_H__
-

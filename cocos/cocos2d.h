@@ -240,6 +240,13 @@ THE SOFTWARE.
 #include "platform/winrt/CCStdC.h"
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    #include "platform/emscripten/CCApplication-emscripten.h"
+    #include "platform/desktop/CCGLViewImpl-desktop.h"
+    #include "platform/emscripten/CCGL-emscripten.h"
+    #include "platform/emscripten/CCStdC-emscripten.h"
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
+
 // script_support
 #include "base/CCScriptSupport.h"
 

@@ -31,6 +31,20 @@ if(ANDROID)
         platform/android/CCFileUtils-android.cpp
         platform/android/CCEnhanceAPI-android.cpp
     )
+elseif(EMSCRIPTEN)
+    set(COCOS_PLATFORM_SPECIFIC_HEADER
+        platform/desktop/CCGLViewImpl-desktop.h
+        platform/emscripten/CCFileUtils-emscripten.h
+        platform/emscripten/devtools-emscripten.h
+    )
+    set(COCOS_PLATFORM_SPECIFIC_SRC
+        platform/emscripten/CCApplication-emscripten.cpp
+        platform/emscripten/CCFileUtils-emscripten.cpp
+        platform/emscripten/CCCommon-emscripten.cpp
+        platform/desktop/CCGLViewImpl-desktop.cpp
+        platform/emscripten/CCDevice-emscripten.cpp
+        platform/emscripten/devtools-emscripten.cpp
+    )
 elseif(WINDOWS)
     set(COCOS_PLATFORM_SPECIFIC_HEADER
         platform/win32/compat/stdint.h

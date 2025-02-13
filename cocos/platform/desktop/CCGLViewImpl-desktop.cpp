@@ -307,8 +307,9 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
             message.append("\nMore info: \n");
             message.append(_glfwError);
         }
-
+#if CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN
         MessageBox(message.c_str(), "Error launch application");
+#endif
         return false;
     }
 
@@ -347,7 +348,7 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
     glfwSetWindowFocusCallback(_mainWindow, GLFWEventHandler::onGLFWWindowFocusCallback);
 
     setFrameSize(rect.size.width, rect.size.height);
-
+#if CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN
     // check OpenGL version at first
     const GLubyte* glVersion = glGetString(GL_VERSION);
 
@@ -360,11 +361,13 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
         MessageBox(strComplain, "OpenGL version too old");
         return false;
     }
-
+#endif
     initGlew();
 
-    // Enable point size by default.
+    // gl_PointSize is always available under WEBGL, but has to be enabled on desktop.
+#if CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#endif
     
     if(_glContextAttrs.multisamplingCount > 0)
         glEnable(GL_MULTISAMPLE);
@@ -1022,7 +1025,7 @@ static bool glew_dynamic_binding()
 // helper
 bool GLViewImpl::initGlew()
 {
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_MAC && CC_TARGET_PLATFORM != CC_PLATFORM_EMSCRIPTEN)
     GLenum GlewInitResult = glewInit();
     if (GLEW_OK != GlewInitResult)
     {

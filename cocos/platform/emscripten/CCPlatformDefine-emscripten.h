@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright (c) 2010-2012 cocos2d-x.org
+Copyright (c) 2011      Laschweinski
 Copyright (c) 2013-2016 Chukong Technologies Inc.
 Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
@@ -24,29 +24,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#ifndef __PLATFORM_CCGL_H__
-#define __PLATFORM_CCGL_H__
-/// @cond DO_NOT_SHOW
+#ifndef __CCPLATFORMDEFINE_H__
+#define __CCPLATFORMDEFINE_H__
 
 #include "platform/CCPlatformConfig.h"
+#if CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
 
-#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
-#include "platform/mac/CCGL-mac.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-#include "platform/ios/CCGL-ios.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-#include "platform/android/CCGL-android.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-#include "platform/win32/CCGL-win32.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
-#include "platform/winrt/CCGL.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
-#include "platform/linux/CCGL-linux.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_TIZEN
-#include "platform/tizen/CCGL-tizen.h"
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
-#include "platform/emscripten/CCGL-emscripten.h"
+#include <string.h>
+
+#define CC_DLL 
+
+#include <assert.h>
+#define CC_ASSERT(cond)    assert(cond)
+#define CC_UNUSED_PARAM(unusedparam) (void)unusedparam
+
+/* Define NULL pointer value */
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL    0
+#else
+#define NULL    ((void *)0)
+#endif
 #endif
 
-/// @endcond
-#endif /* __PLATFORM_CCPLATFORMDEFINE_H__*/
+
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
+
+#endif /* __CCPLATFORMDEFINE_H__*/

@@ -36,6 +36,11 @@
 #include "network/CCDownloader-android.h"
 #define DownloaderImpl  DownloaderAndroid
 
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+
+#include "network/CCDownloader-emscripten.h"
+#define DownloaderImpl  DownloaderEmscripten
+
 #else
 
 #include "network/CCDownloader-curl.h"

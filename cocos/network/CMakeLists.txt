@@ -1,4 +1,15 @@
-if(ANDROID)
+if(EMSCRIPTEN)
+    set(COCOS_NETWORK_HEADER
+        network/CCDownloader-emscripten.h
+        network/HttpClient-emscripten.h
+        )
+    set(COCOS_NETWORK_SRC
+        network/HttpClient-emscripten.cpp
+        network/CCDownloader.cpp
+        network/CCDownloader-emscripten.cpp
+        network/Uri.cpp
+        )
+elseif(ANDROID)
     set(COCOS_NETWORK_HEADER
         network/CCDownloader-android.h
         )
