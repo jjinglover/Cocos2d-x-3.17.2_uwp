@@ -1480,6 +1480,101 @@ class CCPluginCompile(cocos.CCPlugin):
         build_mode = 'Debug' if self._is_debug_mode() else 'Release'
         self.build_vs_project(projectPath, self.project_name, build_mode, self.vs_version)
 
+    def build_emscripten(self):
+        if not self._platforms.is_emscripten_active():
+            return
+
+        #if not cocos.os_is_linux():
+        #    raise cocos.CCPluginError("Please build on linux")
+
+        project_dir = self._project.get_project_dir()
+        cfg_obj = self._platforms.get_current_config()
+        if cfg_obj.cmake_path is not None:
+            cmakefile_dir = os.path.join(project_dir, cfg_obj.cmake_path)
+        else:
+            cmakefile_dir = project_dir
+
+        # get the project name
+        if cfg_obj.project_name is not None:
+            self.project_name = cfg_obj.project_name
+        else:
+            f = open(os.path.join(cmakefile_dir, 'CMakeLists.txt'), 'r')
+            regexp_set_app_name = re.compile(r'\s*set\s*\(\s*APP_NAME', re.IGNORECASE)
+            for line in f.readlines():
+                if regexp_set_app_name.search(line):
+                    self.project_name = re.search('APP_NAME ([^\)]+)\)', line, re.IGNORECASE).group(1)
+                    break
+            if hasattr(self, 'project_name') == False:
+                raise cocos.CCPluginError("Couldn't find APP_NAME in CMakeLists.txt")
+
+        if cfg_obj.build_dir is not None:
+            build_dir = os.path.join(project_dir, cfg_obj.build_dir)
+        else:
+            build_dir = os.path.join(project_dir, 'emscripten-build')
+
+        if not os.path.exists(build_dir):
+            os.makedirs(build_dir)
+        
+        emsdk_root = cocos.check_environment_variable('EMSDK_ROOT')
+        emsdk_env_path = os.path.join(emsdk_root, 'emsdk_env.bat' if cocos.os_is_win32() else 'emsdk_env.sh') 
+        build_mode = 'Debug' if self._is_debug_mode() else 'Release'
+        with cocos.pushd(build_dir):
+            debug_state = 'ON' if self._is_debug_mode() else 'OFF'
+            
+            if cocos.os_is_win32():
+                self._run_cmd('%s && emcmake cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DDEBUG_MODE=%s %s' % (emsdk_env_path, build_mode, debug_state, os.path.relpath(cmakefile_dir, build_dir)))
+            else:
+                self._run_cmd('bash -c "source %s && emcmake cmake -DCMAKE_BUILD_TYPE=%s -DDEBUG_MODE=%s %s"' % (emsdk_env_path, build_mode, debug_state, os.path.relpath(cmakefile_dir, build_dir)))
+
+        with cocos.pushd(build_dir):
+            if cocos.os_is_win32():
+                self._run_cmd('%s && ninja -j %s' % (emsdk_env_path, self._jobs))
+            else:
+                self._run_cmd('bash -c "source %s && emmake make -j%s"' % (emsdk_env_path, self._jobs))
+
+        # move file
+        output_dir = self._output_dir
+
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
+
+        if cfg_obj.build_result_dir is not None:
+            if os.path.exist(os.path.join(build_dir, "bin", cfg_obj.build_result_dir, build_mode )):
+                result_dir = os.path.join(build_dir, 'bin', cfg_obj.build_result_dir, build_mode, self.project_name)
+            else:
+                result_dir = os.path.join(build_dir, 'bin', cfg_obj.build_result_dir, self.project_name)
+        else:
+            if os.path.exists(os.path.join(build_dir, 'bin', build_mode)):
+                result_dir = os.path.join(build_dir, 'bin', build_mode, self.project_name)
+            else:
+                result_dir = os.path.join(build_dir, 'bin', self.project_name)
+        
+        # # package resource
+        # file_packager_path = os.path.join(emsdk_root, 'upstream', 'emscripten', 'tools', 'file_packager')
+        # if self._project._is_script_project():
+        #     data_files = os.path.join(project_dir, "src@", "src") + ' ' + os.path.join(project_dir, "res@", "res")
+        # else:
+        #     data_files = os.path.join(project_dir, "Resources@")
+        
+        # if cocos.os_is_win32():
+        #     self._run_cmd('%s && %s %s --use-preload-cache --preload %s --js-output=%s' % (emsdk_env_path, file_packager_path, os.path.join(result_dir, 'resource.data'), data_files, os.path.join(result_dir, 'resource.js')))
+        # else:
+        #     self._run_cmd('bash -c "source %s && %s %s --use-preload-cache --preload %s --js-output=%s"' % (emsdk_env_path, file_packager_path, os.path.join(result_dir, 'resource.data'), data_files, os.path.join(result_dir, 'resource.js')))
+
+        cocos.copy_files_in_dir(result_dir, output_dir)
+
+        self.run_root = output_dir
+
+        if self._no_res:
+            res_dir = os.path.join(output_dir, "Resources")
+            self._remove_res(res_dir)
+
+        if self._project._is_script_project() and self._compile_script:
+            cocos.Logging.warning(MultiLanguage.get_string('COMPILE_WARNING_NOT_SUPPORT_COMPILE_SCRIPT'))
+
+        cocos.Logging.info(MultiLanguage.get_string('COMPILE_INFO_BUILD_SUCCEED'))
+
     def _get_build_cfg(self):
         build_cfg_dir = self._build_cfg_path()
         build_cfg = os.path.join(build_cfg_dir, CCPluginCompile.BUILD_CONFIG_FILE)
@@ -1534,6 +1629,7 @@ class CCPluginCompile(cocos.CCPlugin):
         self.build_web()
         self.build_linux()
         self.build_metro()
+        self.build_emscripten()
 
         # invoke the custom step: post-build
         self._project.invoke_custom_step_script(cocos_project.Project.CUSTOM_STEP_POST_BUILD, target_platform, args_build_copy)
