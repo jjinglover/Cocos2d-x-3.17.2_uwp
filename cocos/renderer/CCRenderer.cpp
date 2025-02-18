@@ -809,9 +809,16 @@ void Renderer::drawBatchedTriangles()
         //  source: https://www.opengl.org/wiki/Buffer_Object_Streaming#Explicit_multiple_buffering
         // so most probably we won't have any benefit of using it
         glBufferData(GL_ARRAY_BUFFER, sizeof(_verts[0]) * _filledVertex, nullptr, GL_STATIC_DRAW);
+#if CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
+        void *buf = malloc(sizeof(_verts[0]) * _filledVertex);
+        memcpy(buf, _verts, sizeof(_verts[0]) * _filledVertex);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(_verts[0]) * _filledVertex, buf);
+        free(buf);
+#else
         void *buf = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
         memcpy(buf, _verts, sizeof(_verts[0]) * _filledVertex);
         glUnmapBuffer(GL_ARRAY_BUFFER);
+#endif
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
