@@ -5,15 +5,8 @@ add_library(external empty.cpp)
 
 add_subdirectory(Box2D)
 add_subdirectory(chipmunk)
-add_subdirectory(freetype2)
 add_subdirectory(recast)
 add_subdirectory(bullet)
-add_subdirectory(jpeg)
-add_subdirectory(openssl)
-add_subdirectory(tiff)
-add_subdirectory(uv)
-add_subdirectory(webp)
-add_subdirectory(websockets)
 add_subdirectory(tinyxml2)
 add_subdirectory(xxhash)
 add_subdirectory(xxtea)
@@ -26,16 +19,8 @@ add_subdirectory(md5)
 target_link_libraries(external
     ext_box2d
     ext_chipmunk
-    ext_freetype
     ext_recast
-    ext_jpeg
-    ext_uv
-    ext_webp
     ext_bullet
-    ext_ssl
-    ext_crypto
-    ext_tiff
-    ext_websockets
     ext_tinyxml2
     ext_xxhash
     ext_xxtea
@@ -45,6 +30,27 @@ target_link_libraries(external
     ext_poly2tri
     ext_md5
 )
+
+if(NOT EMSCRIPTEN)
+    add_subdirectory(freetype2)
+    add_subdirectory(jpeg)
+    add_subdirectory(openssl)
+    add_subdirectory(tiff)
+    add_subdirectory(uv)
+    add_subdirectory(webp)
+    add_subdirectory(websockets)
+
+    target_link_libraries(external
+        ext_freetype
+        ext_jpeg
+        ext_ssl
+        ext_crypto
+        ext_tiff
+        ext_uv
+        ext_webp
+        ext_websockets
+    )
+endif(NOT EMSCRIPTEN)
 
 # use lua/js specific libs by property to prevent conflict
 if(BUILD_JS_LIBS)
@@ -62,14 +68,14 @@ if(BUILD_LUA_LIBS)
     )
 endif()
 
-if(NOT LINUX)
+if(NOT LINUX AND NOT EMSCRIPTEN)
     add_subdirectory(curl)
     add_subdirectory(png)
     target_link_libraries(external 
         ext_curl
         ext_png
     )
-endif(NOT LINUX)
+endif(NOT LINUX AND NOT EMSCRIPTEN)
     
 if(LINUX)
     add_subdirectory(linux-specific/fmod)
