@@ -130,16 +130,32 @@ void Configuration::gatherGPUInfo()
 	_valueDict["gl.max_samples_allowed"] = Value((int)_maxSamplesAllowed);
 #endif
     
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    _supportsETC1 = checkForGLExtension("WEBGL_compressed_texture_etc1");
+#else
     _supportsETC1 = checkForGLExtension("GL_OES_compressed_ETC1_RGB8_texture");
+#endif
     _valueDict["gl.supports_ETC1"] = Value(_supportsETC1);
     
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    _supportsS3TC = checkForGLExtension("WEBGL_compressed_texture_s3tc");
+#else
     _supportsS3TC = checkForGLExtension("GL_EXT_texture_compression_s3tc");
+#endif
     _valueDict["gl.supports_S3TC"] = Value(_supportsS3TC);
     
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    _supportsATITC = checkForGLExtension("WEBGL_compressed_texture_atc");
+#else
     _supportsATITC = checkForGLExtension("GL_AMD_compressed_ATC_texture");
+#endif
     _valueDict["gl.supports_ATITC"] = Value(_supportsATITC);
     
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    _supportsPVRTC = checkForGLExtension("WEBGL_compressed_texture_pvrtc");
+#else
     _supportsPVRTC = checkForGLExtension("GL_IMG_texture_compression_pvrtc");
+#endif
 	_valueDict["gl.supports_PVRTC"] = Value(_supportsPVRTC);
 
     _supportsNPOT = true;
