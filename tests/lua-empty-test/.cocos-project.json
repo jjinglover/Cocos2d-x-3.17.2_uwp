@@ -16,6 +16,11 @@
         "project_file": "cocos2d_tests.xcodeproj",
         "target_name": "lua-empty-test iOS"
     }, 
+    "emscripten_cfg": {
+        "project_path": "project/proj.emscripten",
+        "project_name": "lua-empty-test",
+        "cmake_path": "project"
+    }, 
     "project_type": "lua", 
     "has_native": true,
     "mac_cfg": {
