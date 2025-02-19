@@ -86,7 +86,7 @@ namespace network
             // call next request
             if (!userData->isAlone)
             {
-                Vector<HttpRequest *> requestQueue = _httpClient->_requestQueue;
+                Vector<HttpRequest *> &requestQueue = _httpClient->_requestQueue;
                 if (!requestQueue.empty())
                 {
                     HttpRequest *request = requestQueue.at(0);
