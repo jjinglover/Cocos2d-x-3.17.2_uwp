@@ -32,7 +32,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
-#include <SDL/SDL.h>
+//#include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
 #include "audio/include/AudioEngine.h"
 

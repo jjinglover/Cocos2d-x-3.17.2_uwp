@@ -60,7 +60,7 @@ bool AudioEngineImpl::init()
     mapSound.clear();
 
     g_AudioEngineImpl = this;
-    SDL_Init(SDL_INIT_AUDIO);
+    //SDL_Init(SDL_INIT_AUDIO);
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
     int ret = Mix_OpenAudio(0, 0, 0, 0);
     CC_ASSERT(ret == 0);
