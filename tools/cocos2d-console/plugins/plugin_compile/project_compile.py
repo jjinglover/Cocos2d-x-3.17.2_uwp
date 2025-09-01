@@ -1518,6 +1518,11 @@ class CCPluginCompile(cocos.CCPlugin):
         emsdk_root = cocos.check_environment_variable('EMSDK_ROOT')
         emsdk_env_path = os.path.join(emsdk_root, 'emsdk_env.bat' if cocos.os_is_win32() else 'emsdk_env.sh') 
         build_mode = 'Debug' if self._is_debug_mode() else 'Release'
+
+        build_dir = os.path.join(build_dir, build_mode)
+        if not os.path.exists(build_dir):
+            os.makedirs(build_dir)
+
         with cocos.pushd(build_dir):
             debug_state = 'ON' if self._is_debug_mode() else 'OFF'
             
