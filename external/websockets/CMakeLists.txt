@@ -22,7 +22,9 @@ set_target_properties(${target_name} PROPERTIES
 
 set_property(TARGET ${target_name} APPEND PROPERTY INTERFACE_LINK_LIBRARIES "ext_ssl")
 set_property(TARGET ${target_name} APPEND PROPERTY INTERFACE_LINK_LIBRARIES "ext_crypto")
+if(NOT OHOS)
 set_property(TARGET ${target_name} APPEND PROPERTY INTERFACE_LINK_LIBRARIES "ext_uv")
+endif(NOT OHOS)
 
 if(WINDOWS)
   set_target_properties(${target_name} PROPERTIES

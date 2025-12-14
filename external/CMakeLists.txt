@@ -36,7 +36,6 @@ if(NOT EMSCRIPTEN)
     add_subdirectory(jpeg)
     add_subdirectory(openssl)
     add_subdirectory(tiff)
-    add_subdirectory(uv)
     add_subdirectory(webp)
     add_subdirectory(websockets)
 
@@ -46,11 +45,18 @@ if(NOT EMSCRIPTEN)
         ext_ssl
         ext_crypto
         ext_tiff
-        ext_uv
         ext_webp
         ext_websockets
     )
 endif(NOT EMSCRIPTEN)
+
+if(NOT OHOS)
+    add_subdirectory(uv)
+
+    target_link_libraries(external
+        ext_uv
+    )
+endif(NOT OHOS)
 
 # use lua/js specific libs by property to prevent conflict
 if(BUILD_JS_LIBS)
@@ -95,6 +101,17 @@ if(ANDROID)
     )
 endif()
 
+if(OHOS)
+    #add_subdirectory(ohos-specific/cpufeatures) TBD need fixed?
+    add_subdirectory(ohos-specific/pvmp3dec)
+    add_subdirectory(ohos-specific/tremolo)
+    target_link_libraries(external 
+        # ext_cpufeatures  TBD need fixed?
+        ext_pvmp3dec 
+        ext_tremolo
+    )
+endif()
+
 if(WINDOWS)
     # sqlite3 prebuilt only existed at windows
     add_subdirectory(sqlite3)
@@ -120,7 +137,7 @@ if(WINDOWS OR MACOSX OR LINUX)
     )
 endif()
 
-if(MACOSX OR ANDROID OR WINDOWS)
+if(MACOSX OR ANDROID OR WINDOWS OR OHOS)
     add_subdirectory(zlib)
     target_link_libraries(external 
         ext_zlib
