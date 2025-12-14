@@ -86,6 +86,10 @@ elseif(EMSCRIPTEN)
     list(APPEND GAME_SOURCE
          proj.emscripten/main.cpp
          )
+elseif(OHOS)
+    list(APPEND GAME_SOURCE
+        proj.ohos/entry/src/main/cpp/main.cpp
+         )
 endif()
 
 list(APPEND GAME_HEADER
@@ -458,12 +462,14 @@ set(all_code_files
     ${GAME_SOURCE}
     )
 
-if(NOT ANDROID)
+if(NOT ANDROID AND NOT OHOS)
     add_executable(${APP_NAME} ${all_code_files})
-else()
+elseif(ANDROID)
     add_library(${APP_NAME} SHARED ${all_code_files})
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/platform/android ${ENGINE_BINARY_PATH}/cocos/platform)
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
+else()
+    add_library(${APP_NAME} SHARED ${all_code_files})
 endif()
 
 target_link_libraries(${APP_NAME} cocos2d)
