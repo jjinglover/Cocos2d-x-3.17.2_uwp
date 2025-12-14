@@ -130,6 +130,12 @@ use_cocos2dx_compile_options(cocos2d)
 # use all platform related system libs
 use_cocos2dx_libs_depend(cocos2d)
 
+if (OHOS)
+ target_link_libraries(cocos2d Aki::libjsbind ${Drawing-lib} ${libace-lib} libGLESv2.so ${libnapi-lib} ${rawfile-lib}
+    ${EGL-lib} ${hilog-lib} libohaudio.so libavplayer.so  libnative_window.so libnative_buffer.so
+    libnative_display_manager.so libohsensor.so libnative_media_codecbase.so libnative_media_core.so libnative_media_acodec.so libnative_media_avdemuxer.so libnative_media_avsource.so)
+endif()
+
 target_include_directories(cocos2d
     PUBLIC ${COCOS2DX_ROOT_PATH}
     PUBLIC ${COCOS2DX_ROOT_PATH}/cocos
