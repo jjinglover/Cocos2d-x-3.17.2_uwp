@@ -318,6 +318,10 @@ protected:
 
         std::list<int> audioIDs;
 
+    #if CC_TARGET_PLATFORM == CC_PLATFORM_OHOS
+        std::chrono::high_resolution_clock::time_point lastPlayTime;
+        ProfileHelper() = default;
+    #else
         double lastPlayTime;
 
         ProfileHelper()
@@ -325,6 +329,7 @@ protected:
         {
 
         }
+    #endif
     };
     
     struct AudioInfo
