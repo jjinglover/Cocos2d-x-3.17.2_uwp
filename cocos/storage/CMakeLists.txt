@@ -6,6 +6,10 @@ if(ANDROID)
     set(COCOS_STORAGE_SRC
         storage/local-storage/LocalStorage-android.cpp
         )
+elseif(OHOS)
+    set(COCOS_STORAGE_SRC
+        storage/local-storage/LocalStorage-ohos.cpp
+        )
 elseif(EMSCRIPTEN)
     set(COCOS_STORAGE_SRC
         storage/local-storage/LocalStorage-emscripten.cpp
