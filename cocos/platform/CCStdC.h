@@ -41,6 +41,8 @@ THE SOFTWARE.
 #include "platform/winrt/CCStdC.h"
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
 #include "platform/linux/CCStdC-linux.h"
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_OHOS
+#include "platform/ohos/CCStdC-ohos.h"
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
 #include "platform/emscripten/CCStdC-emscripten.h"
 #endif

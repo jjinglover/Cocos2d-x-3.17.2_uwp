@@ -77,6 +77,10 @@ public:
      */
     static void setAccelerometerInterval(float interval);
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_OHOS
+    static void sendAndClearAcc();
+#endif
+
     /**
      * Controls whether the screen should remain on.
      * 
